@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+class LCD
+  attr_reader :size
+
+  def initialize
+    (0..ARGV.size).each do |i|
+      @size = ARGV[i+1] if ARGV[i] == "--size"
+    end
+    @size ||= 1
+  end
+
+end
+
+### testing:
+puts "Hello user. This is my LCD app:"
+puts "================================"
+l = LCD.new
+puts l.size
+puts "================================"
