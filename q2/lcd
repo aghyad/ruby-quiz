@@ -1,20 +1,174 @@
 #!/usr/bin/ruby
 
 class LCD
-  attr_reader :size
+  attr_reader :size, :number
 
   def initialize
+    size_i = nil
     (0..ARGV.size).each do |i|
-      @size = ARGV[i+1] if ARGV[i] == "--size"
+      if ARGV[i] == "--size" || ARGV[i] == "-s"
+        size_i = i
+        @size = ARGV[i+1]
+      end
     end
     @size ||= 1
+    @number = size_i==0 ? ARGV[2] : ARGV[0]
+    init_numbers_templates
+  end
+
+  def init_numbers_templates
+    zero = [
+      " - ",
+      "| |",
+      "   ",
+      "| |",
+      " - "
+    ]
+
+    one = [
+      "   ",
+      "  |",
+      "   ",
+      "  |",
+      "   "
+    ]
+
+    two = [
+      " - ",
+      "  |",
+      " - ",
+      "|  ",
+      " - "
+    ]
+
+    three = [
+      " - ",
+      "  |",
+      " - ",
+      "  |",
+      " - "
+    ]
+
+    four = [
+      "   ",
+      "| |",
+      " - ",
+      "  |",
+      "   "
+    ]
+
+    five = [
+      " - ",
+      "|  ",
+      " - ",
+      "  |",
+      " - "
+    ]
+
+    six = [
+      " - ",
+      "|  ",
+      " - ",
+      "| |",
+      " - "
+    ]
+
+    seven = [
+      " - ",
+      "  |",
+      "   ",
+      "  |",
+      "   "
+    ]
+
+    eight = [
+      " - ",
+      "| |",
+      " - ",
+      "| |",
+      " - "
+    ]
+
+    nine = [
+      " - ",
+      "| |",
+      " - ",
+      "  |",
+      " - "
+    ]
+
+    @digits = { :"0" => zero, :"1" => one, :"2" => two,
+      :"3" => three, :"4" => four, :"5" => five,
+      :"6" => six, :"7" => seven, :"8" => eight,
+      :"9" => nine }
+  end
+
+  def print_horizontal_lcd_line(s = "")
+    s.gsub(/ /," % ").strip.split(' ').each_with_index do |c,j|
+      if j == 0 || j == 2
+        print " " if c == "%"
+        print c if c != "%"
+      else
+        size.to_i.times do |x|
+          print " " if c == "%"
+          print c if c != "%"
+        end
+      end
+    end
+    print "\n"
+  end
+
+  def print_vertical_lcd_line(s = "")
+    size.to_i.times do |x|
+      s.gsub(/ /," % ").strip.split(' ').each_with_index do |c,j|
+        if j == 0 || j == 2
+          print " " if c == "%"
+          print c if c != "%"
+        else
+          size.to_i.times do |x|
+            print " " if c == "%"
+            print c if c != "%"
+          end
+        end
+      end
+      print "\n"
+    end
+  end
+
+  def print_lcd
+    (0..4).each do |section_num|
+      number.to_s.split('').each do |n|
+        lcd_num_template = @digits[n.to_s.to_sym]
+        s = lcd_num_template[section_num]
+        case section_num
+          when 0
+            print_horizontal_lcd_line(s)
+            #print "\n" unless number.to_s.size > 1
+          when 1
+            print_vertical_lcd_line(s)
+            #print "\n" unless number.to_s.size > 1
+          when 2
+            print_horizontal_lcd_line(s)
+            #print "\n" unless number.to_s.size > 1
+          when 3
+            print_vertical_lcd_line(s)
+            #print "\n" unless number.to_s.size > 1
+          when 4
+            print_horizontal_lcd_line(s)
+            #print "\n" unless number.to_s.size > 1
+        end
+      end
+      print "\n" if number.to_s.size > 1
+    end
   end
 
 end
 
 ### testing:
 puts "Hello user. This is my LCD app:"
-puts "================================"
+puts "--------------------------------"
 l = LCD.new
-puts l.size
+puts "Number: #{l.number} (size #{l.size})"
+puts "--------------------------------"
+l.print_lcd
 puts "================================"
